@@ -5,7 +5,7 @@ import (
 	"smart-hub/internal/domain/models"
 )
 
-type SmartFeatureRepository interface {
+type SmartFeatureService interface {
 	Create(ctx context.Context, feature *models.SmartFeature) (*models.SmartFeature, error)
 	GetByID(ctx context.Context, id string) (*models.SmartFeature, error)
 	GetWithModelID(ctx context.Context, modelID string) ([]*models.SmartFeature, error)

@@ -26,11 +26,11 @@ func (r *PGSmartFeatureRepository) Create(ctx context.Context, feature *models.S
 	return nil, nil
 }
 
-func (r *PGSmartFeatureRepository) GetByID(ctx context.Context, id int) (*models.SmartFeature, error) {
+func (r *PGSmartFeatureRepository) GetByID(ctx context.Context, id string) (*models.SmartFeature, error) {
 	return nil, nil
 }
 
-func (r *PGSmartFeatureRepository) GetWithModelID(ctx context.Context, modelID int) ([]*models.SmartFeature, error) {
+func (r *PGSmartFeatureRepository) GetWithModelID(ctx context.Context, modelID string) ([]*models.SmartFeature, error) {
 	return nil, nil
 }
 
@@ -42,6 +42,6 @@ func (r *PGSmartFeatureRepository) Update(ctx context.Context, feature *models.S
 	return nil, nil
 }
 
-func (r *PGSmartFeatureRepository) Delete(ctx context.Context, id int) error {
+func (r *PGSmartFeatureRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }

@@ -26,7 +26,7 @@ func (r *PGSmartModelRepository) Create(ctx context.Context, model *models.Smart
 	return nil, nil
 }
 
-func (r *PGSmartModelRepository) GetByID(ctx context.Context, id int) (*models.SmartModel, error) {
+func (r *PGSmartModelRepository) GetByID(ctx context.Context, id string) (*models.SmartModel, error) {
 	return nil, nil
 }
 
@@ -42,6 +42,6 @@ func (r *PGSmartModelRepository) Update(ctx context.Context, model *models.Smart
 	return nil, nil
 }
 
-func (r *PGSmartModelRepository) Delete(ctx context.Context, id int) error {
+func (r *PGSmartModelRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
