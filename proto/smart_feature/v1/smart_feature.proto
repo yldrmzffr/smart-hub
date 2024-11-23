@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package smart_hub.smart_feature.v1;
+
+option go_package = "smart-hub/proto/smart_feature/v1;smart_feature1";
+
+import "google/protobuf/timestamp.proto";
+
+enum ProtocolType {
+  PROTOCOL_TYPE_REST = 0;
+  PROTOCOL_TYPE_GRPC = 1;
+  PROTOCOL_TYPE_MQTT = 2;
+  PROTOCOL_TYPE_WEBSOCKET = 3;
+}
+
+service SmartFeatureService {
+  rpc CreateSmartFeature(CreateSmartFeatureRequest) returns (SmartFeature) {}
+  rpc GetSmartFeature(GetSmartFeatureRequest) returns (SmartFeature) {}
+  rpc GetFeaturesByModelID(GetFeaturesByModelIDRequest) returns (GetFeaturesByModelIDResponse) {}
+  rpc UpdateSmartFeature(UpdateSmartFeatureRequest) returns (SmartFeature) {}
+  rpc DeleteSmartFeature(DeleteSmartFeatureRequest) returns (DeleteSmartFeatureResponse) {}
+}
+
+message SmartFeature {
+  string id = 1;
+  string model_id = 2;
+  string name = 3;
+  string description = 4;
+  ProtocolType protocol = 5;
+  string interface_path = 6;
+  bytes parameters = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message CreateSmartFeatureRequest {
+  SmartFeature feature = 1;
+}
+
+message CreateSmartFeatureResponse {
+  SmartFeature feature = 1;
+}
+
+message GetSmartFeatureRequest {
+  string id = 1;
+}
+
+message GetSmartFeatureResponse {
+  SmartFeature feature = 1;
+}
+
+message GetFeaturesByModelIDRequest {
+  string model_id = 1;
+}
+
+message GetFeaturesByModelIDResponse {
+  repeated SmartFeature features = 1;
+}
+
+message UpdateSmartFeatureRequest {
+  SmartFeature feature = 1;
+}
+
+message UpdateSmartFeatureResponse {
+  SmartFeature feature = 1;
+}
+
+message DeleteSmartFeatureRequest {
+  string id = 1;
+}
+
+message DeleteSmartFeatureResponse {}

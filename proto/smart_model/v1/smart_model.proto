@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package smart_hub.smart_model.v1;
+
+option go_package = "smart-hub/proto/smart_model/v1;smart_model_v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+enum ModelType {
+  MODEL_TYPE_DEVICE = 0;
+  MODEL_TYPE_SERVICE = 1;
+}
+
+enum ModelCategory {
+  MODEL_CATEGORY_WEARABLE = 0;
+  MODEL_CATEGORY_CAMERA = 1;
+  MODEL_CATEGORY_WEATHER = 2;
+  MODEL_CATEGORY_ENTERTAINMENT = 3;
+}
+
+service SmartModelService {
+  rpc CreateSmartModel(CreateSmartModelRequest) returns (CreateSmartModelResponse);
+  rpc GetSmartModel(GetSmartModelRequest) returns (GetSmartModelResponse);
+  rpc ListSmartModels(ListSmartModelsRequest) returns (ListSmartModelsResponse);
+  rpc UpdateSmartModel(UpdateSmartModelRequest) returns (UpdateSmartModelResponse);
+  rpc DeleteSmartModel(DeleteSmartModelRequest) returns (DeleteSmartModelResponse);
+}
+
+message SmartModel {
+  string id = 1;
+  string name = 2;
+  ModelType type = 3;
+  ModelCategory category = 4;
+  string manufacturer = 5;
+  string model_number = 6;
+  string description = 7;
+  google.protobuf.Struct metadata = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message CreateSmartModelRequest {
+  SmartModel model = 1;
+}
+
+message CreateSmartModelResponse {
+  SmartModel model = 1;
+}
+
+message GetSmartModelRequest {
+  string id = 1;
+}
+
+message GetSmartModelResponse {
+  SmartModel model = 1;
+}
+
+message ListSmartModelsRequest {}
+
+message ListSmartModelsResponse {
+  repeated SmartModel models = 1;
+}
+
+message UpdateSmartModelRequest {
+  SmartModel model = 1;
+}
+
+message UpdateSmartModelResponse {
+  SmartModel model = 1;
+}
+
+message DeleteSmartModelRequest {
+  string id = 1;
+}
+
+message DeleteSmartModelResponse {}
