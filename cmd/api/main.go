@@ -4,11 +4,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
+	"google.golang.org/grpc"
+	"net"
 	"os"
+	"os/signal"
 	"smart-hub/config"
+	pbModel "smart-hub/gen/proto/smart_model/v1"
+	"smart-hub/internal/application/service"
 	"smart-hub/internal/common/database"
 	"smart-hub/internal/common/database/migrations"
 	"smart-hub/internal/common/logger"
+	"smart-hub/internal/infrastructure/database/postgres"
+	"smart-hub/internal/presentation/grpc/handler"
+	"smart-hub/internal/presentation/grpc/mapper"
+	"syscall"
 )
 
 var (
@@ -65,6 +74,46 @@ func main() {
 	}
 	defer db.Close()
 
-	logger.Info("Service started", "service", cfg.Service.Name, "port", cfg.Service.Port)
+	// Initialize repositories
+	smartModelRepo := postgres.NewPGSmartModelRepository(db)
+
+	// Initialize services
+	smartModelService := service.NewSmartModelService(smartModelRepo)
+
+	// Initialize mappers
+	smartModelMapper := mapper.NewSmartModelMapper()
+
+	// Initialize handlers
+	smartModelHandler := handler.NewSmartModelHandler(smartModelService, smartModelMapper)
+
+	// Initialize GRPC server
+	grpcServer := grpc.NewServer()
+
+	pbModel.RegisterSmartModelServiceServer(grpcServer, smartModelHandler)
+
+	address := fmt.Sprintf(":%s", cfg.Service.Port)
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		logger.Error("Failed to listen", err)
+		os.Exit(1)
+	}
+
+	logger.Info(fmt.Sprintf("Starting GRPC server on %s", address))
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		if err := grpcServer.Serve(listener); err != nil {
+			logger.Error("Failed to serve", err)
+			os.Exit(1)
+		}
+	}()
+
+	<-stop
+	logger.Info("Shutting down server...")
+
+	grpcServer.GracefulStop()
+	logger.Info("Server stopped")
 
 }

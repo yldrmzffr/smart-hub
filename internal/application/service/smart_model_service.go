@@ -27,9 +27,9 @@ func (s *SmartModelService) GetByID(ctx context.Context, id string) (*models.Sma
 	return s.repo.GetByID(ctx, id)
 }
 
-func (s *SmartModelService) GetWithModelID(ctx context.Context, modelID string) ([]*models.SmartModel, error) {
-	logger.Debug("Get smart model by model ID", "modelID", modelID)
-	return s.repo.GetWithType(ctx, modelID)
+func (s *SmartModelService) GetWithType(ctx context.Context, modelType models.ModelType) ([]*models.SmartModel, error) {
+	logger.Debug("Get smart models by type", "type", modelType)
+	return s.repo.GetWithType(ctx, modelType)
 }
 
 func (s *SmartModelService) GetAll(ctx context.Context) ([]*models.SmartModel, error) {

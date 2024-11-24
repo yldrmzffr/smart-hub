@@ -4,8 +4,8 @@ package smart_hub.smart_model.v1;
 
 option go_package = "smart-hub/proto/smart_model/v1;smart_model_v1";
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 
 enum ModelType {
   MODEL_TYPE_DEVICE = 0;
@@ -40,8 +40,18 @@ message SmartModel {
   google.protobuf.Timestamp updated_at = 10;
 }
 
+message CreateSmartModelInput {
+  string name = 1;
+  ModelType type = 2;
+  ModelCategory category = 3;
+  string manufacturer = 4;
+  string model_number = 5;
+  string description = 6;
+  google.protobuf.Struct metadata = 7;
+}
+
 message CreateSmartModelRequest {
-  SmartModel model = 1;
+  CreateSmartModelInput model = 1;
 }
 
 message CreateSmartModelResponse {
@@ -62,8 +72,19 @@ message ListSmartModelsResponse {
   repeated SmartModel models = 1;
 }
 
+message UpdateSmartModelInput {
+  string id = 1;
+  string name = 2;
+  ModelType type = 3;
+  ModelCategory category = 4;
+  string manufacturer = 5;
+  string model_number = 6;
+  string description = 7;
+  google.protobuf.Struct metadata = 8;
+}
+
 message UpdateSmartModelRequest {
-  SmartModel model = 1;
+  UpdateSmartModelInput model = 1;
 }
 
 message UpdateSmartModelResponse {

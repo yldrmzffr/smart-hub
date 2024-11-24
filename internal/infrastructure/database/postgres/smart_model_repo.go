@@ -80,7 +80,7 @@ func (r *PGSmartModelRepository) GetByID(ctx context.Context, id string) (*model
 	return &model, nil
 }
 
-func (r *PGSmartModelRepository) GetWithType(ctx context.Context, modelType string) ([]*models.SmartModel, error) {
+func (r *PGSmartModelRepository) GetWithType(ctx context.Context, modelType models.ModelType) ([]*models.SmartModel, error) {
 	query := `
 	  SELECT id, name, description, type, category, manufacturer, model_number, metadata, created_at, updated_at
 	  FROM smart_models
@@ -153,15 +153,18 @@ func (r *PGSmartModelRepository) GetAll(ctx context.Context) ([]*models.SmartMod
 
 func (r *PGSmartModelRepository) Update(ctx context.Context, model *models.SmartModel) (*models.SmartModel, error) {
 	query := `
-		UPDATE smart_models
-		SET name = $2, description = $3, type = $4, category = $5, manufacturer = $6, model_number = $7, metadata = $8, updated_at = $9
-		WHERE id = $1
-		RETURNING id, name, description, type, category, manufacturer, model_number, metadata, created_at, updated_at
-	`
+        UPDATE smart_models
+        SET name = $2, description = $3, type = $4, category = $5, manufacturer = $6, 
+            model_number = $7, metadata = $8, updated_at = $9
+        WHERE id = $1
+        RETURNING id, name, description, type, category, manufacturer, model_number, 
+                  metadata, created_at, updated_at
+    `
 
 	updatedModel := models.SmartModel{}
 
-	err := r.db.QueryRow(ctx, query, model.ID,
+	err := r.db.QueryRow(ctx, query,
+		model.ID,
 		model.Name,
 		model.Description,
 		model.Type,
