@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smart-hub
+  labels:
+    app: smart-hub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smart-hub
+  template:
+    metadata:
+      labels:
+        app: smart-hub
+    spec:
+      containers:
+        - name: smart-hub
+          image: smart-hub:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 50051
+          env:
+            - name: DATABASE_HOST
+              value: postgres
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: DATABASE_DATABASE
+              value: smart_hub
