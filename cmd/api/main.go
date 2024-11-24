@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"smart-hub/config"
+	pbHealth "smart-hub/gen/proto/health/v1"
 	pbModel "smart-hub/gen/proto/smart_model/v1"
 	"smart-hub/internal/application/service"
 	"smart-hub/internal/common/database"
@@ -84,12 +85,14 @@ func main() {
 	smartModelMapper := mapper.NewSmartModelMapper()
 
 	// Initialize handlers
+	healthHandler := handler.NewHealthHandler(db)
 	smartModelHandler := handler.NewSmartModelHandler(smartModelService, smartModelMapper)
 
 	// Initialize GRPC server
 	grpcServer := grpc.NewServer()
 
 	pbModel.RegisterSmartModelServiceServer(grpcServer, smartModelHandler)
+	pbHealth.RegisterHealthServer(grpcServer, healthHandler)
 
 	address := fmt.Sprintf(":%s", cfg.Service.Port)
 	listener, err := net.Listen("tcp", address)
