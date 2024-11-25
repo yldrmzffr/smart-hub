@@ -11,7 +11,9 @@ import (
 
 type SmartModelMapper interface {
 	ToProto(*models.SmartModel) (*pb.SmartModel, error)
+	ToProtoList([]*models.SmartModel) ([]*pb.SmartModel, error)
 	ToDomain(*pb.CreateSmartModelRequest) (*models.SmartModel, error)
+	ToDomainUpdate(*pb.UpdateSmartModelRequest) (*models.SmartModel, error)
 	ToCreateResponse(*models.SmartModel) (*pb.CreateSmartModelResponse, error)
 	ToGetResponse(*models.SmartModel) (*pb.GetSmartModelResponse, error)
 	ToListResponse([]*models.SmartModel) (*pb.ListSmartModelsResponse, error)
@@ -45,6 +47,50 @@ func (m *smartModelMapper) ToProto(model *models.SmartModel) (*pb.SmartModel, er
 		Metadata:     metadata,
 		CreatedAt:    timestamppb.New(model.CreatedAt),
 		UpdatedAt:    timestamppb.New(model.UpdatedAt),
+	}, nil
+}
+
+func (m *smartModelMapper) ToProtoList(models []*models.SmartModel) ([]*pb.SmartModel, error) {
+	protoModels := make([]*pb.SmartModel, len(models))
+	for i, model := range models {
+		protoModel, err := m.ToProto(model)
+		if err != nil {
+			return nil, err
+		}
+		protoModels[i] = protoModel
+	}
+
+	return protoModels, nil
+}
+
+func (m *smartModelMapper) ToDomainUpdate(req *pb.UpdateSmartModelRequest) (*models.SmartModel, error) {
+	if req == nil || req.Model == nil {
+		return nil, nil
+	}
+
+	metadata := make(map[string]interface{})
+	if req.Model.Metadata != nil {
+		metadata = req.Model.Metadata.AsMap()
+	}
+
+	id, err := uuid.Parse(req.Model.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+
+	return &models.SmartModel{
+		ID:           id,
+		Name:         req.Model.Name,
+		Description:  req.Model.Description,
+		Type:         mapProtoTypeToDomain(req.Model.Type),
+		Category:     mapProtoCategoryToDomain(req.Model.Category),
+		Manufacturer: req.Model.Manufacturer,
+		ModelNumber:  req.Model.ModelNumber,
+		Metadata:     metadata,
+		CreatedAt:    now,
+		UpdatedAt:    now,
 	}, nil
 }
 
