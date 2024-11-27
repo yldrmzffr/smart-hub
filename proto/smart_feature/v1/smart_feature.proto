@@ -4,21 +4,22 @@ package smart_hub.smart_feature.v1;
 
 option go_package = "smart-hub/proto/smart_feature/v1;smart_feature1";
 
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 enum ProtocolType {
-  PROTOCOL_TYPE_REST = 0;
-  PROTOCOL_TYPE_GRPC = 1;
-  PROTOCOL_TYPE_MQTT = 2;
-  PROTOCOL_TYPE_WEBSOCKET = 3;
+  REST = 0;
+  GRPC = 1;
+  MQTT = 2;
+  WEBSOCKET = 3;
 }
 
 service SmartFeatureService {
-  rpc CreateSmartFeature(CreateSmartFeatureRequest) returns (SmartFeature) {}
-  rpc GetSmartFeature(GetSmartFeatureRequest) returns (SmartFeature) {}
-  rpc GetFeaturesByModelID(GetFeaturesByModelIDRequest) returns (GetFeaturesByModelIDResponse) {}
-  rpc UpdateSmartFeature(UpdateSmartFeatureRequest) returns (SmartFeature) {}
-  rpc DeleteSmartFeature(DeleteSmartFeatureRequest) returns (DeleteSmartFeatureResponse) {}
+  rpc CreateSmartFeature(CreateSmartFeatureRequest) returns (CreateSmartFeatureResponse);
+  rpc GetSmartFeature(GetSmartFeatureRequest) returns (GetSmartFeatureResponse);
+  rpc GetFeaturesByModelID(GetFeaturesByModelIDRequest) returns (GetFeaturesByModelIDResponse);
+  rpc UpdateSmartFeature(UpdateSmartFeatureRequest) returns (UpdateSmartFeatureResponse);
+  rpc DeleteSmartFeature(DeleteSmartFeatureRequest) returns (DeleteSmartFeatureResponse);
 }
 
 message SmartFeature {
@@ -28,13 +29,22 @@ message SmartFeature {
   string description = 4;
   ProtocolType protocol = 5;
   string interface_path = 6;
-  bytes parameters = 7;
+  google.protobuf.Struct parameters = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
 }
 
+message CreateSmartFeatureInput {
+  string model_id = 1;
+  string name = 2;
+  string description = 3;
+  ProtocolType protocol = 4;
+  string interface_path = 5;
+  google.protobuf.Struct parameters = 6;
+}
+
 message CreateSmartFeatureRequest {
-  SmartFeature feature = 1;
+  CreateSmartFeatureInput feature = 1;
 }
 
 message CreateSmartFeatureResponse {
@@ -57,8 +67,17 @@ message GetFeaturesByModelIDResponse {
   repeated SmartFeature features = 1;
 }
 
+message UpdateSmartFeatureInput {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  ProtocolType protocol = 4;
+  string interface_path = 5;
+  google.protobuf.Struct parameters = 6;
+}
+
 message UpdateSmartFeatureRequest {
-  SmartFeature feature = 1;
+  UpdateSmartFeatureInput feature = 1;
 }
 
 message UpdateSmartFeatureResponse {

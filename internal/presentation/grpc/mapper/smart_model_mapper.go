@@ -40,8 +40,8 @@ func (m *smartModelMapper) ToProto(model *models.SmartModel) (*pb.SmartModel, er
 		Id:           model.ID.String(),
 		Name:         model.Name,
 		Description:  model.Description,
-		Type:         pb.ModelType(pb.ModelType_value[string(model.Type)]),
-		Category:     pb.ModelCategory(pb.ModelCategory_value[string(model.Category)]),
+		Type:         mapDomainTypeToProto(model.Type),
+		Category:     mapDomainCategoryToProto(model.Category),
 		Manufacturer: model.Manufacturer,
 		ModelNumber:  model.ModelNumber,
 		Metadata:     metadata,
@@ -172,26 +172,52 @@ func (m *smartModelMapper) ToUpdateResponse(model *models.SmartModel) (*pb.Updat
 
 func mapProtoTypeToDomain(t pb.ModelType) models.ModelType {
 	switch t {
-	case pb.ModelType_MODEL_TYPE_DEVICE:
+	case pb.ModelType_DEVICE:
 		return models.DeviceType
-	case pb.ModelType_MODEL_TYPE_SERVICE:
+	case pb.ModelType_SERVICE:
 		return models.ServiceType
 	default:
 		return models.DeviceType
 	}
 }
 
+func mapDomainTypeToProto(t models.ModelType) pb.ModelType {
+	switch t {
+	case models.DeviceType:
+		return pb.ModelType_DEVICE
+	case models.ServiceType:
+		return pb.ModelType_SERVICE
+	default:
+		return pb.ModelType_DEVICE
+	}
+}
+
 func mapProtoCategoryToDomain(c pb.ModelCategory) models.ModelCategory {
 	switch c {
-	case pb.ModelCategory_MODEL_CATEGORY_WEARABLE:
+	case pb.ModelCategory_WEARABLE:
 		return models.WearableCategory
-	case pb.ModelCategory_MODEL_CATEGORY_CAMERA:
+	case pb.ModelCategory_CAMERA:
 		return models.CameraCategory
-	case pb.ModelCategory_MODEL_CATEGORY_WEATHER:
+	case pb.ModelCategory_WEATHER:
 		return models.WeatherCategory
-	case pb.ModelCategory_MODEL_CATEGORY_ENTERTAINMENT:
+	case pb.ModelCategory_ENTERTAINMENT:
 		return models.EntertainmentCategory
 	default:
 		return models.WearableCategory
+	}
+}
+
+func mapDomainCategoryToProto(c models.ModelCategory) pb.ModelCategory {
+	switch c {
+	case models.WearableCategory:
+		return pb.ModelCategory_WEARABLE
+	case models.CameraCategory:
+		return pb.ModelCategory_CAMERA
+	case models.WeatherCategory:
+		return pb.ModelCategory_WEATHER
+	case models.EntertainmentCategory:
+		return pb.ModelCategory_ENTERTAINMENT
+	default:
+		return pb.ModelCategory_WEARABLE
 	}
 }

@@ -8,15 +8,15 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 enum ModelType {
-  MODEL_TYPE_DEVICE = 0;
-  MODEL_TYPE_SERVICE = 1;
+  DEVICE = 0;
+  SERVICE = 1;
 }
 
 enum ModelCategory {
-  MODEL_CATEGORY_WEARABLE = 0;
-  MODEL_CATEGORY_CAMERA = 1;
-  MODEL_CATEGORY_WEATHER = 2;
-  MODEL_CATEGORY_ENTERTAINMENT = 3;
+  WEARABLE = 0;
+  CAMERA = 1;
+  WEATHER = 2;
+  ENTERTAINMENT = 3;
 }
 
 service SmartModelService {

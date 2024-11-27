@@ -155,7 +155,7 @@ func (r *PGSmartFeatureRepository) GetAll(ctx context.Context) ([]*models.SmartF
 func (r *PGSmartFeatureRepository) Update(ctx context.Context, feature *models.SmartFeature) (*models.SmartFeature, error) {
 	query := `
 		UPDATE smart_features
-		SET model_id = $1, name = $2, description = $3, protocol = $4, interface_path = $5, parameters = $6, updated_at = $7
+		SET name = $2, description = $3, protocol = $4, interface_path = $5, parameters = $6, updated_at = $7
 		WHERE id = $1
 		RETURNING id, model_id, name, description, protocol, interface_path, parameters, created_at, updated_at
 	`
@@ -163,14 +163,13 @@ func (r *PGSmartFeatureRepository) Update(ctx context.Context, feature *models.S
 	updatedFeature := models.SmartFeature{}
 
 	err := r.db.QueryRow(ctx, query,
-		feature.ModelID,
+		feature.ID,
 		feature.Name,
 		feature.Description,
 		feature.Protocol,
 		feature.InterfacePath,
 		feature.Parameters,
 		feature.UpdatedAt,
-		feature.ID,
 	).Scan(
 		&updatedFeature.ID,
 		&updatedFeature.ModelID,
