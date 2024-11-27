@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"smart-hub/config"
 	pbHealth "smart-hub/gen/proto/health/v1"
+	pbFeature "smart-hub/gen/proto/smart_feature/v1"
 	pbModel "smart-hub/gen/proto/smart_model/v1"
 	"smart-hub/internal/application/service"
 	"smart-hub/internal/common/database"
@@ -77,21 +78,26 @@ func main() {
 
 	// Initialize repositories
 	smartModelRepo := postgres.NewPGSmartModelRepository(db)
+	smartFeatureRepo := postgres.NewPGSmartFeatureRepository(db)
 
 	// Initialize services
 	smartModelService := service.NewSmartModelService(smartModelRepo)
+	smartFeatureService := service.NewSmartFeatureService(smartFeatureRepo)
 
 	// Initialize mappers
 	smartModelMapper := mapper.NewSmartModelMapper()
+	smartFeatureMapper := mapper.NewSmartFeatureMapper()
 
 	// Initialize handlers
 	healthHandler := handler.NewHealthHandler(db)
 	smartModelHandler := handler.NewSmartModelHandler(smartModelService, smartModelMapper)
+	smartFeatureHandler := handler.NewSmartFeatureHandler(smartFeatureService, smartFeatureMapper)
 
 	// Initialize GRPC server
 	grpcServer := grpc.NewServer()
 
 	pbModel.RegisterSmartModelServiceServer(grpcServer, smartModelHandler)
+	pbFeature.RegisterSmartFeatureServiceServer(grpcServer, smartFeatureHandler)
 	pbHealth.RegisterHealthServer(grpcServer, healthHandler)
 
 	address := fmt.Sprintf(":%s", cfg.Service.Port)
