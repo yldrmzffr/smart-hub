@@ -2,23 +2,17 @@ package postgres
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"smart-hub/internal/common/database"
 	"smart-hub/internal/domain/models"
 )
 
 type PGSmartModelRepository struct {
-	db *pgxpool.Pool
+	db database.PgxPool
 }
 
 func NewPGSmartModelRepository(db database.Database) *PGSmartModelRepository {
-	pgDB, ok := db.(*database.PostgresDB)
-	if !ok {
-		return nil
-	}
-
 	return &PGSmartModelRepository{
-		db: pgDB.GetPool(),
+		db: db.GetPool(),
 	}
 }
 

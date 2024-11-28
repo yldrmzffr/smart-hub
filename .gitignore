@@ -137,4 +137,7 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
+# Grpc Gen
+gen
+
 # End of https://www.toptal.com/developers/gitignore/api/goland,go

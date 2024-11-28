@@ -7,7 +7,7 @@ import (
 )
 
 type PostgresDB struct {
-	pool *pgxpool.Pool
+	pool PgxPool
 }
 
 type PostgreConfig struct {
@@ -56,6 +56,6 @@ func (db *PostgresDB) Close() {
 	logger.Info("PostgreSQL connection closed successfully.")
 }
 
-func (db *PostgresDB) GetPool() *pgxpool.Pool {
+func (db *PostgresDB) GetPool() PgxPool {
 	return db.pool
 }
