@@ -8,7 +8,6 @@ import (
 type SmartModelService interface {
 	Create(ctx context.Context, model *models.SmartModel) (*models.SmartModel, error)
 	GetByID(ctx context.Context, id string) (*models.SmartModel, error)
-	GetWithModelID(ctx context.Context, modelID string) ([]*models.SmartModel, error)
 	GetAll(ctx context.Context) ([]*models.SmartModel, error)
 	Update(ctx context.Context, model *models.SmartModel) (*models.SmartModel, error)
 	Delete(ctx context.Context, id string) error

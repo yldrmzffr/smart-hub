@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	pb "smart-hub/gen/proto/smart_feature/v1"
-	"smart-hub/internal/application/service"
+	"smart-hub/internal/application/interfaces"
 	"smart-hub/internal/common/logger"
 	"smart-hub/internal/common/validation"
 	"smart-hub/internal/presentation/grpc/mapper"
@@ -13,12 +13,12 @@ import (
 
 type SmartFeatureHandler struct {
 	pb.UnimplementedSmartFeatureServiceServer
-	service *service.SmartFeatureService
+	service interfaces.SmartFeatureService
 	mapper  mapper.SmartFeatureMapper
 }
 
 func NewSmartFeatureHandler(
-	service *service.SmartFeatureService,
+	service interfaces.SmartFeatureService,
 	mapper mapper.SmartFeatureMapper,
 ) *SmartFeatureHandler {
 	return &SmartFeatureHandler{

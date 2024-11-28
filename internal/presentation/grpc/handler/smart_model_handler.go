@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	pb "smart-hub/gen/proto/smart_model/v1"
-	"smart-hub/internal/application/service"
+	"smart-hub/internal/application/interfaces"
 	"smart-hub/internal/common/logger"
 	"smart-hub/internal/common/validation"
 	"smart-hub/internal/presentation/grpc/mapper"
@@ -13,12 +13,12 @@ import (
 
 type SmartModelHandler struct {
 	pb.UnimplementedSmartModelServiceServer
-	service *service.SmartModelService
+	service interfaces.SmartModelService
 	mapper  mapper.SmartModelMapper
 }
 
 func NewSmartModelHandler(
-	service *service.SmartModelService,
+	service interfaces.SmartModelService,
 	mapper mapper.SmartModelMapper,
 ) *SmartModelHandler {
 	return &SmartModelHandler{
