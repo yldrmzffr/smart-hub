@@ -20,14 +20,14 @@ const (
 )
 
 type SmartModel struct {
-	ID           uuid.UUID              `json:"id" db:"id"`
+	ID           uuid.UUID              `json:"id" db:"id" validate:"omitempty,uuid"`
 	Name         string                 `json:"name" db:"name" validate:"required,min=2,max=255"`
-	Description  string                 `json:"description" db:"description" validate:"required"`
-	Type         ModelType              `json:"type" db:"type" validate:"required,oneof=device service"`
-	Category     ModelCategory          `json:"category" db:"category" validate:"required"`
-	Manufacturer string                 `json:"manufacturer,omitempty" db:"manufacturer"`
-	ModelNumber  string                 `json:"model_number,omitempty" db:"model_number"`
-	Metadata     map[string]interface{} `json:"metadata,omitempty" db:"metadata"`
-	CreatedAt    time.Time              `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time              `json:"updated_at" db:"updated_at"`
+	Description  string                 `json:"description" db:"description" validate:"required,max=1000"`
+	Type         ModelType              `json:"type" db:"type" validate:"required,lowercase,oneof=device service"`
+	Category     ModelCategory          `json:"category" db:"category" validate:"required,lowercase,oneof=wearable camera weather entertainment"`
+	Manufacturer string                 `json:"manufacturer,omitempty" db:"manufacturer" validate:"omitempty,max=255"`
+	ModelNumber  string                 `json:"model_number,omitempty" db:"model_number" validate:"omitempty,max=50,alphanum"`
+	Metadata     map[string]interface{} `json:"metadata,omitempty" db:"metadata" validate:"omitempty,dive,keys,required,endkeys"`
+	CreatedAt    time.Time              `json:"created_at" db:"created_at" validate:"omitempty,ltefield=UpdatedAt"`
+	UpdatedAt    time.Time              `json:"updated_at" db:"updated_at" validate:"omitempty"`
 }

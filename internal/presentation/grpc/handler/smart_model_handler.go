@@ -7,6 +7,7 @@ import (
 	pb "smart-hub/gen/proto/smart_model/v1"
 	"smart-hub/internal/application/service"
 	"smart-hub/internal/common/logger"
+	"smart-hub/internal/common/validation"
 	"smart-hub/internal/presentation/grpc/mapper"
 )
 
@@ -34,6 +35,10 @@ func (h *SmartModelHandler) CreateSmartModel(ctx context.Context, req *pb.Create
 		return nil, status.Error(codes.InvalidArgument, "invalid request: model is required")
 	}
 
+	if err := validation.ValidateStruct(smartModel); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	createdModel, err := h.service.Create(ctx, smartModel)
 	if err != nil {
 		logger.Error("Failed to create smart model", "error", err)
@@ -53,6 +58,11 @@ func (h *SmartModelHandler) CreateSmartModel(ctx context.Context, req *pb.Create
 
 func (h *SmartModelHandler) GetSmartModel(ctx context.Context, req *pb.GetSmartModelRequest) (*pb.GetSmartModelResponse, error) {
 	logger.Debug("Getting smart model", "request", req)
+
+	err := validation.ValidateUUID(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
 
 	smartModel, err := h.service.GetByID(ctx, req.Id)
 	if err != nil {
@@ -99,6 +109,11 @@ func (h *SmartModelHandler) UpdateSmartModel(ctx context.Context, req *pb.Update
 		return nil, status.Error(codes.InvalidArgument, "invalid request: model is required")
 	}
 
+	err = validation.ValidateStruct(smartModel)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	updatedModel, err := h.service.Update(ctx, smartModel)
 	if err != nil {
 		logger.Error("Failed to update smart model", "error", err)
@@ -119,7 +134,12 @@ func (h *SmartModelHandler) UpdateSmartModel(ctx context.Context, req *pb.Update
 func (h *SmartModelHandler) DeleteSmartModel(ctx context.Context, req *pb.DeleteSmartModelRequest) (*pb.DeleteSmartModelResponse, error) {
 	logger.Debug("Deleting smart model", "request", req)
 
-	err := h.service.Delete(ctx, req.Id)
+	err := validation.ValidateUUID(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	err = h.service.Delete(ctx, req.Id)
 	if err != nil {
 		logger.Error("Failed to delete smart model", "error", err)
 		return nil, status.Error(codes.Internal, "failed to delete smart model")
