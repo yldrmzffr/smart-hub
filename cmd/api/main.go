@@ -22,85 +22,99 @@ import (
 	"syscall"
 )
 
-var (
-	cfg config.Config
-)
+type App struct {
+	cfg        config.Config
+	grpcServer *grpc.Server
+	db         database.Database
+}
 
-func configSetup() {
-	err := envconfig.Process("", &cfg)
+func NewApp() *App {
+	return &App{
+		grpcServer: grpc.NewServer(),
+	}
+}
+
+func (a *App) configSetup() error {
+	return envconfig.Process("", &a.cfg)
+}
+
+func (a *App) loggerSetup() error {
+	return logger.InitLogger(&a.cfg.Log)
+}
+
+func (a *App) databaseSetup(ctx context.Context) error {
+	// Migrate database
+	if err := migrations.RunMigrations(a.cfg.Database.GetURL()); err != nil {
+		return fmt.Errorf("database migrations error: %w", err)
+	}
+
+	// Connect to database
+	db, err := database.NewPostgresDatabase(ctx, &database.PostgreConfig{DSN: a.cfg.Database.GetDSN()})
 	if err != nil {
-		panic(fmt.Errorf("config setup error: %w", err))
+		return fmt.Errorf("database connection error: %w", err)
 	}
+	a.db = db
+	return nil
 }
 
-func loggerSetup() {
-	err := logger.InitLogger(&cfg.Log)
-	if err != nil {
-		panic(fmt.Errorf("logger setup error: %w", err))
-	}
+func (a *App) smartFeatureSetup() {
+	smartFeatureRepo := postgres.NewPGSmartFeatureRepository(a.db)
+	smartFeatureService := service.NewSmartFeatureService(smartFeatureRepo)
+	smartFeatureMapper := mapper.NewSmartFeatureMapper()
+	smartFeatureHandler := handler.NewSmartFeatureHandler(smartFeatureService, smartFeatureMapper)
+	pbFeature.RegisterSmartFeatureServiceServer(a.grpcServer, smartFeatureHandler)
 }
 
-func migrateDatabase(cfg *config.DatabaseConfig) {
-	dbUrl := cfg.GetURL()
-	if err := migrations.RunMigrations(dbUrl); err != nil {
-		panic(fmt.Errorf("database migrations error: %w", err))
-	}
+func (a *App) smartModelSetup() {
+	smartModelRepo := postgres.NewPGSmartModelRepository(a.db)
+	smartModelService := service.NewSmartModelService(smartModelRepo)
+	smartModelMapper := mapper.NewSmartModelMapper()
+	smartModelHandler := handler.NewSmartModelHandler(smartModelService, smartModelMapper)
+	pbModel.RegisterSmartModelServiceServer(a.grpcServer, smartModelHandler)
 }
 
-func panicError() {
-	if r := recover(); r != nil {
-		logger.Error("Panic error", "error", r)
-		os.Exit(1)
+func (a *App) healthSetup() {
+	healthHandler := handler.NewHealthHandler(a.db)
+	pbHealth.RegisterHealthServer(a.grpcServer, healthHandler)
+}
+
+func (a *App) shutdown() {
+	logger.Info("Shutting down server...")
+	a.grpcServer.GracefulStop()
+	if a.db != nil {
+		a.db.Close()
 	}
+	logger.Info("Server stopped")
 }
 
 func main() {
 	ctx := context.Background()
+	app := NewApp()
+	defer app.shutdown()
 
-	defer panicError()
-
-	// Setup configuration
-	configSetup()
-
-	// Initialize logger
-	loggerSetup()
-
-	// Migrate database
-	migrateDatabase(&cfg.Database)
-
-	// Initialize database connection
-	db, err := database.NewPostgresDatabase(ctx, &database.PostgreConfig{DSN: cfg.Database.GetDSN()})
-	if err != nil {
-		logger.Error("Database Connection Error", err)
+	// Initialize base components
+	if err := app.configSetup(); err != nil {
+		logger.Error("Config setup error", err)
 		os.Exit(1)
 	}
-	defer db.Close()
 
-	// Initialize repositories
-	smartModelRepo := postgres.NewPGSmartModelRepository(db)
-	smartFeatureRepo := postgres.NewPGSmartFeatureRepository(db)
+	if err := app.loggerSetup(); err != nil {
+		logger.Error("Logger setup error", err)
+		os.Exit(1)
+	}
 
-	// Initialize services
-	smartModelService := service.NewSmartModelService(smartModelRepo)
-	smartFeatureService := service.NewSmartFeatureService(smartFeatureRepo)
+	if err := app.databaseSetup(ctx); err != nil {
+		logger.Error("Database setup error", err)
+		os.Exit(1)
+	}
 
-	// Initialize mappers
-	smartModelMapper := mapper.NewSmartModelMapper()
-	smartFeatureMapper := mapper.NewSmartFeatureMapper()
+	// Initialize modules
+	app.healthSetup()
+	app.smartModelSetup()
+	app.smartFeatureSetup()
 
-	// Initialize handlers
-	healthHandler := handler.NewHealthHandler(db)
-	smartModelHandler := handler.NewSmartModelHandler(smartModelService, smartModelMapper)
-	smartFeatureHandler := handler.NewSmartFeatureHandler(smartFeatureService, smartFeatureMapper)
-
-	// Initialize GRPC server
-	grpcServer := grpc.NewServer()
-
-	pbModel.RegisterSmartModelServiceServer(grpcServer, smartModelHandler)
-	pbFeature.RegisterSmartFeatureServiceServer(grpcServer, smartFeatureHandler)
-	pbHealth.RegisterHealthServer(grpcServer, healthHandler)
-
-	address := fmt.Sprintf(":%s", cfg.Service.Port)
+	// Start server
+	address := fmt.Sprintf(":%s", app.cfg.Service.Port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		logger.Error("Failed to listen", err)
@@ -113,16 +127,11 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		if err := grpcServer.Serve(listener); err != nil {
+		if err := app.grpcServer.Serve(listener); err != nil {
 			logger.Error("Failed to serve", err)
 			os.Exit(1)
 		}
 	}()
 
 	<-stop
-	logger.Info("Shutting down server...")
-
-	grpcServer.GracefulStop()
-	logger.Info("Server stopped")
-
 }
