@@ -37,64 +37,64 @@ smart-hub/
 
 ### Why Clean Architecture?
 
-Clean Architecture'ı tercih etmemizin temel nedenleri:
+The main reasons we chose Clean Architecture:
 
-- 🎯 **Yüksek Testability**: Her katman bağımsız olarak test edilebilir
-- 🔄 **Düşük Coupling**: Katmanlar arası minimum bağımlılık
-- 🛠️ **Kolay Maintenance**: Değişiklikler izole edilmiş şekilde yapılabilir
-- 🔌 **Framework Independence**: Framework değişiklikleri minimum etki yaratır
-- 📦 **Independent Deployment**: Mikroservisler bağımsız deploy edilebilir
+- 🎯 **High Testability**: Each layer can be tested independently
+- 🔄 **Low Coupling**: Minimal dependencies between layers
+- 🛠️ **Easy Maintenance**: Changes can be made in isolation
+- 🔌 **Framework Independence**: Framework changes have minimal impact
+- 📦 **Independent Deployment**: Microservices can be deployed independently
 
-### Clean Architecture Katmanları
+### Clean Architecture Layers
 
 #### 1. 🎯 Domain Layer (`/internal/domain`)
-- İş mantığının kalbi
-- Entities ve core business rules
-- Diğer katmanlara bağımlılığı yok
-- Interface tanımları burada
-- Örnek: `SmartModel`, `SmartFeature` entities
+- Heart of business logic
+- Entities and core business rules
+- No dependencies on other layers
+- Interface definitions are here
+- Example: `SmartModel`, `SmartFeature` entities
 
 #### 2. 🔄 Application Layer (`/internal/application`)
-- Use-case'leri içerir
+- Contains use-cases
 - Business logic orchestration
-- Domain layer'ı kullanır
-- Interface implementasyonlarını kullanır
-- Örnek: `SmartModelService`, `SmartFeatureService`
+- Uses domain layer
+- Uses interface implementations
+- Example: `SmartModelService`, `SmartFeatureService`
 
 #### 3. 🔌 Infrastructure Layer (`/internal/infrastructure`)
-- Teknik detayları içerir
+- Contains technical details
 - Database, external services
-- Repository implementasyonları
-- Örnek: `PostgresSmartModelRepository`
+- Repository implementations
+- Example: `PostgresSmartModelRepository`
 
 #### 4. 📡 Presentation Layer (`/internal/presentation`)
 - API handlers (gRPC)
 - Request/Response mapping
 - Input validation
 - Error handling
-- Örnek: `SmartModelHandler`, `SmartFeatureHandler`
+- Example: `SmartModelHandler`, `SmartFeatureHandler`
 
 ## 🛠️ Technical Stack
 
 ### Core Technologies
 
 #### 🚀 Go (v1.23)
-- Yüksek performanslı backend development
+- High-performance backend development
 - Built-in concurrency support
-- Statically typed ve compiled
+- Statically typed and compiled
 - Low memory footprint
 
 #### 📡 gRPC
 - High-performance RPC framework
-- Protocol Buffers ile strongly-typed API
+- Strongly-typed API with Protocol Buffers
 - Bi-directional streaming
-- Built-in load balancing ve health checking
+- Built-in load balancing and health checking
 
 #### 🗄️ PostgreSQL
-- ACID compliant veritabanı
-- JSON/JSONB desteği ile esnek veri yapısı
-- Robust indexing ve querying
-- Yüksek güvenilirlik
+- ACID compliant database
+- Flexible data structure with JSON/JSONB support
+- Robust indexing and querying
+- High reliability
 
 ### Development Tools & Libraries
 
@@ -194,22 +194,22 @@ resp, err := client.CreateSmartFeature(ctx, &pb.CreateSmartFeatureRequest{
 
 ### 📱 Smart Models
 
-Smart Model, IoT cihazlarını veya servisleri temsil eden ana yapı taşımızdır.
+Smart Model is our main building block that represents IoT devices or services.
 
-#### Model Tipleri
-- 🔧 **Device Models**: Fiziksel IoT cihazları
+#### Model Types
+- 🔧 **Device Models**: Physical IoT devices
   - Smart Watch
   - Smart Camera
   - Smart Home Devices
   - IoT Sensors
 
-- 🌐 **Service Models**: Bulut servisleri
+- 🌐 **Service Models**: Cloud services
   - Weather Services
   - Entertainment Services
   - Data Processing Services
   - Analytics Services
 
-#### Model Özellikleri
+#### Model Properties
 ```go
 type SmartModel struct {
     ID           uuid.UUID              // Unique identifier
@@ -227,15 +227,15 @@ type SmartModel struct {
 
 ### 🔌 Smart Features
 
-Smart Feature, bir Smart Model'in sahip olduğu özellikleri ve yetenekleri tanımlar.
+Smart Feature defines the capabilities and abilities that a Smart Model has.
 
-#### Feature Protokolleri
+#### Feature Protocols
 - 🌐 **REST**: HTTP-based API endpoints
 - 📡 **gRPC**: High-performance RPC calls
 - 📨 **MQTT**: IoT messaging protocol
 - 🔄 **WebSocket**: Real-time bi-directional communication
 
-#### Feature Yapısı
+#### Feature Structure
 ```go
 type SmartFeature struct {
     ID            uuid.UUID              // Unique identifier
@@ -289,4 +289,3 @@ Key environment variables:
 | DATABASE_PASSWORD | Database password | postgres |
 | DATABASE_DATABASE | Database name | smart_hub_db |
 | LOG_LEVEL | Logging level | DEBUG |
-
