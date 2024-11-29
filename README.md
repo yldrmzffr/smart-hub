@@ -74,27 +74,85 @@ The main reasons we chose Clean Architecture:
 - Error handling
 - Example: `SmartModelHandler`, `SmartFeatureHandler`
 
+### System Architecture
+
+```mermaid
+flowchart TB
+    subgraph Client
+        gRPC[gRPC Client]
+    end
+
+    subgraph "Smart Hub API"
+        main[Main Application]
+        health[Health Handler]
+        
+        subgraph Handlers
+            sh[Smart Model Handler]
+            fh[Smart Feature Handler]
+        end
+        
+        subgraph Services
+            sms[Smart Model Service]
+            sfs[Smart Feature Service]
+        end
+        
+        subgraph Repositories
+            smr[Smart Model Repository]
+            sfr[Smart Feature Repository]
+        end
+        
+        subgraph Database
+            pg[(PostgreSQL)]
+        end
+    end
+
+    gRPC --> main
+    main --> health
+    main --> sh
+    main --> fh
+    sh --> sms
+    fh --> sfs
+    sms --> smr
+    sfs --> sfr
+    smr --> pg
+    sfr --> pg
+
+    subgraph Validation
+        val[Validator]
+    end
+    sh --> val
+    fh --> val
+
+    subgraph Mappers
+        mm[Model Mapper]
+        fm[Feature Mapper]
+    end
+    sh --> mm
+    fh --> fm
+    health --> pg
+
+    classDef service fill:#f96,stroke:#333
+    classDef handler fill:#9cf,stroke:#333
+    classDef database fill:#c9f,stroke:#333
+    classDef validation fill:#fcf,stroke:#333
+    classDef mapper fill:#cfc,stroke:#333
+
+    class sms,sfs service
+    class sh,fh,health handler
+    class pg database
+    class val validation
+    class mm,fm mapper
+```
+
+
+
 ## 🛠️ Technical Stack
 
 ### Core Technologies
 
-#### 🚀 Go (v1.23)
-- High-performance backend development
-- Built-in concurrency support
-- Statically typed and compiled
-- Low memory footprint
-
-#### 📡 gRPC
-- High-performance RPC framework
-- Strongly-typed API with Protocol Buffers
-- Bi-directional streaming
-- Built-in load balancing and health checking
-
-#### 🗄️ PostgreSQL
-- ACID compliant database
-- Flexible data structure with JSON/JSONB support
-- Robust indexing and querying
-- High reliability
+  - **Go**: High-performance language for microservices
+  - **gRPC**: Efficient RPC communication
+  - **PostgreSQL**: Reliable relational database
 
 ### Development Tools & Libraries
 
