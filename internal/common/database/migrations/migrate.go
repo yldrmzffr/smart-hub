@@ -8,10 +8,13 @@ import (
 )
 
 func RunMigrations(databaseURL string) error {
-	logger.Info("Running migrations...")
+	return RunMigrationsWithSourceUrl(databaseURL, "file://migrations")
+}
 
+func RunMigrationsWithSourceUrl(databaseURL string, sourceUrl string) error {
+	logger.Info("Running migrations...")
 	m, err := migrate.New(
-		"file://migrations",
+		sourceUrl,
 		databaseURL)
 	if err != nil {
 		return err

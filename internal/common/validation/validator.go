@@ -21,7 +21,10 @@ func GetValidator() *validator.Validate {
 
 func ValidateStruct(s interface{}) error {
 	err := GetValidator().Struct(s)
-	logger.Error("Validation error", "error", err)
+	if err != nil {
+		logger.Error("Validation error", "error", err)
+	}
+
 	return err
 }
 
