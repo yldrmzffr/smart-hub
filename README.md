@@ -330,11 +330,15 @@ go test ./internal/domain/models/... -v
 ```bash
 make setup              # Install required tools
 make proto              # Generate protobuf code
-make test-unit          # Run unit tests
+make run                # Run the server
+make run-docker-compose # Run the server using docker-compose
+make prepare-and-run    # Setup, proto, run
 make test-integration   # Run integration tests
-make all               # Run setup, proto and tests
-make run               # Run the service
-make clean             # Clean up generated files
+make test-unit          # Run unit tests
+make test-all           # Setup, proto, test-integration
+make coverage           # Run test coverage
+make clean              # Clean generated files and stop test containers
+make help               # Show help message
 ```
 
 ## 🔧 Configuration
