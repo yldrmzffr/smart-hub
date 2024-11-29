@@ -6,6 +6,16 @@ PROTOC_GO_GRPC_VERSION := v1.3.0
 # Build-time variables
 DOCKER_COMPOSE_TEST_FILE := docker-compose.test.yml
 
+.PHONY: run
+run:
+	@echo "Running the server..."
+	go run cmd/api/main.go
+
+
+.PHONY: prepare-and-run
+prepare-and-run: setup proto run
+
+
 .PHONY: all
 all: setup proto test-integration
 
@@ -63,7 +73,7 @@ clean:
 .PHONY: coverage
 coverage: test-integration-up
 	@echo "Running test coverage..."
-	go test ./... -coverprofile=coverage.out
+	go test $(go list ./... | grep -v '/gen/proto') -coverprofile=coverage.out
 	go tool cover -html=coverage.out
 
 .PHONY: help
@@ -71,6 +81,8 @@ help:
 	@echo "Available targets:"
 	@echo "  setup              - Install required development tools"
 	@echo "  proto              - Generate protobuf code"
+	@echo "  run                - Run the server"
+	@echo "  prepare-and-run    - Setup, proto, run"
 	@echo "  test-integration   - Run integration tests"
 	@echo "  test-unit          - Run unit tests"
 	@echo "  all                - Setup, proto, test-integration"
