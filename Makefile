@@ -4,20 +4,21 @@ PROTOC_GO_VERSION := v1.31.0
 PROTOC_GO_GRPC_VERSION := v1.3.0
 
 # Build-time variables
-DOCKER_COMPOSE_TEST_FILE := docker-compose.test.yml
+DOCKER_COMPOSE_TEST_FILE := docker-compose.test.yaml
+DOCKER_COMPOSE_FILE := docker-compose.yaml
 
 .PHONY: run
 run:
 	@echo "Running the server..."
 	go run cmd/api/main.go
 
+.PHONY: run-docker-compose
+run-docker-compose:
+	@echo "Running the server using docker-compose..."
+	docker-compose -f $(DOCKER_COMPOSE_FILE) up
 
 .PHONY: prepare-and-run
 prepare-and-run: setup proto run
-
-
-.PHONY: all
-all: setup proto test-integration
 
 # Install required development tools
 .PHONY: setup
@@ -58,7 +59,7 @@ test-unit:
 	@echo "Running unit tests..."
 	go test ./... -v -count=1
 
-.PHONY: all
+.PHONY: test-all
 all: setup proto test-unit test-integration
 
 .PHONY: clean
@@ -82,10 +83,11 @@ help:
 	@echo "  setup              - Install required development tools"
 	@echo "  proto              - Generate protobuf code"
 	@echo "  run                - Run the server"
+	@echo "  run-docker-compose - Run the server using docker-compose"
 	@echo "  prepare-and-run    - Setup, proto, run"
 	@echo "  test-integration   - Run integration tests"
 	@echo "  test-unit          - Run unit tests"
-	@echo "  all                - Setup, proto, test-integration"
+	@echo "  test-all           - Setup, proto, test-integration"
 	@echo "  coverage           - Run test coverage"
 	@echo "  clean              - Clean generated files and stop test containers"
 	@echo "  help               - Show this help message"
