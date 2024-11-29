@@ -12,6 +12,7 @@ Smart Hub Service is built with modern architecture principles to handle:
 - 🔄 **Protocol Support**: Multiple protocol integration (REST, gRPC, MQTT, WebSocket)
 - 🗄️ **Persistent Storage**: Reliable PostgreSQL database integration
 - 🔍 **Smart Search**: Find devices/services by name, identifier, type, or category
+- 🚀 **Kubernetes Ready**: [Easy deployment with Kubernetes] [Kubernetes Docs](k8s/README.md)
 
 ## 📁 Project Structure
 
@@ -144,8 +145,6 @@ flowchart TB
     class mm,fm mapper
 ```
 
-
-
 ## 🛠️ Technical Stack
 
 ### Core Technologies
@@ -169,6 +168,11 @@ flowchart TB
 - `github.com/golang/mock`: Mock generation
 
 ## 🚀 Quick Start
+
+### Detailed Kubernetes Setup and Configurations
+
+- [Kubernetes Setup](k8s/README.md)
+
 
 ### Prerequisites
 
@@ -347,3 +351,7 @@ Key environment variables:
 | DATABASE_PASSWORD | Database password | postgres |
 | DATABASE_DATABASE | Database name | smart_hub_db |
 | LOG_LEVEL | Logging level | DEBUG |
+
+## 🚧 Known Issues
+
+- [Github Issues](https://github.com/yldrmzffr/smart-hub/issues)
